@@ -10,17 +10,14 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as BoardRouteImport } from './routes/board'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BoardIndexRouteImport } from './routes/board/index'
+import { Route as BoardAllRouteImport } from './routes/board/all'
+import { Route as BoardFolderRouteImport } from './routes/board/$folder'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BoardRoute = BoardRouteImport.update({
-  id: '/board',
-  path: '/board',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -28,35 +25,58 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BoardIndexRoute = BoardIndexRouteImport.update({
+  id: '/board/',
+  path: '/board/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BoardAllRoute = BoardAllRouteImport.update({
+  id: '/board/all',
+  path: '/board/all',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BoardFolderRoute = BoardFolderRouteImport.update({
+  id: '/board/$folder',
+  path: '/board/$folder',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/board': typeof BoardRoute
   '/login': typeof LoginRoute
+  '/board/$folder': typeof BoardFolderRoute
+  '/board/all': typeof BoardAllRoute
+  '/board': typeof BoardIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/board': typeof BoardRoute
   '/login': typeof LoginRoute
+  '/board/$folder': typeof BoardFolderRoute
+  '/board/all': typeof BoardAllRoute
+  '/board': typeof BoardIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/board': typeof BoardRoute
   '/login': typeof LoginRoute
+  '/board/$folder': typeof BoardFolderRoute
+  '/board/all': typeof BoardAllRoute
+  '/board/': typeof BoardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/board' | '/login'
+  fullPaths: '/' | '/login' | '/board/$folder' | '/board/all' | '/board'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/board' | '/login'
-  id: '__root__' | '/' | '/board' | '/login'
+  to: '/' | '/login' | '/board/$folder' | '/board/all' | '/board'
+  id: '__root__' | '/' | '/login' | '/board/$folder' | '/board/all' | '/board/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  BoardRoute: typeof BoardRoute
   LoginRoute: typeof LoginRoute
+  BoardFolderRoute: typeof BoardFolderRoute
+  BoardAllRoute: typeof BoardAllRoute
+  BoardIndexRoute: typeof BoardIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -68,13 +88,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/board': {
-      id: '/board'
-      path: '/board'
-      fullPath: '/board'
-      preLoaderRoute: typeof BoardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -82,13 +95,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/board/': {
+      id: '/board/'
+      path: '/board'
+      fullPath: '/board'
+      preLoaderRoute: typeof BoardIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/board/all': {
+      id: '/board/all'
+      path: '/board/all'
+      fullPath: '/board/all'
+      preLoaderRoute: typeof BoardAllRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/board/$folder': {
+      id: '/board/$folder'
+      path: '/board/$folder'
+      fullPath: '/board/$folder'
+      preLoaderRoute: typeof BoardFolderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  BoardRoute: BoardRoute,
   LoginRoute: LoginRoute,
+  BoardFolderRoute: BoardFolderRoute,
+  BoardAllRoute: BoardAllRoute,
+  BoardIndexRoute: BoardIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
