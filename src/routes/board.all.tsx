@@ -5,9 +5,5 @@ export const Route = createFileRoute("/board/all")({
 });
 
 function AllNotesPage() {
-  return (
-    <div>
-      <h1>All Notes</h1>
-    </div>
-  );
+  return <h1>All Notes</h1>;
 }

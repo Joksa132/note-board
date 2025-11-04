@@ -6,10 +6,5 @@ export const Route = createFileRoute("/board/$folder")({
 
 function FolderBoardPage() {
   const { folder } = Route.useParams();
-
-  return (
-    <div>
-      <h1>{folder} folder</h1>
-    </div>
-  );
+  return <h1>{folder} folder</h1>;
 }
