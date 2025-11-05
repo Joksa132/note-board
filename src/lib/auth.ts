@@ -14,6 +14,21 @@ export async function getCurrentUser() {
   };
 }
 
+export async function registerUser() {
+  const user = await getCurrentUser();
+
+  if (!user) return;
+
+  const res = await fetch("/api/register-user", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ user }),
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Failed to register user");
+}
+
 export async function handleLogin(provider: "google" | "github") {
   const { error } = await supabase.auth.signInWithOAuth({
     provider,
