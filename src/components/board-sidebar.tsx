@@ -19,6 +19,7 @@ import type { Folder, User } from "@/lib/types";
 import { Link } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addFolder, deleteFolder } from "@/lib/folders";
+import { useRouter } from "@tanstack/react-router";
 
 type BoardSidebarProps = {
   user: User;
@@ -27,6 +28,8 @@ type BoardSidebarProps = {
 
 export function BoardSidebar({ user, folders }: BoardSidebarProps) {
   const queryClient = useQueryClient();
+  const router = useRouter();
+  const currentPath = router.state.location.pathname;
 
   const userInitials = user.name
     ?.split(" ")
@@ -43,8 +46,12 @@ export function BoardSidebar({ user, folders }: BoardSidebarProps) {
 
   const deleteFolderMutation = useMutation({
     mutationFn: (folderId: string) => deleteFolder(folderId),
-    onSuccess: () => {
+    onSuccess: (_, folderId) => {
       queryClient.invalidateQueries({ queryKey: ["folders", user.id] });
+
+      if (currentPath === `/board/${folderId}`) {
+        router.navigate({ to: "/board/all" });
+      }
     },
   });
 
