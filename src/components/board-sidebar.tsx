@@ -17,6 +17,8 @@ import { handleLogout } from "@/lib/auth";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import type { Folder, User } from "@/lib/types";
 import { Link } from "@tanstack/react-router";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { addFolder, deleteFolder } from "@/lib/folders";
 
 type BoardSidebarProps = {
   user: User;
@@ -24,11 +26,27 @@ type BoardSidebarProps = {
 };
 
 export function BoardSidebar({ user, folders }: BoardSidebarProps) {
+  const queryClient = useQueryClient();
+
   const userInitials = user.name
     ?.split(" ")
     .map((n) => n[0])
     .join("")
     .toUpperCase();
+
+  const addFolderMutation = useMutation({
+    mutationFn: () => addFolder(user.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["folders", user.id] });
+    },
+  });
+
+  const deleteFolderMutation = useMutation({
+    mutationFn: (folderId: string) => deleteFolder(folderId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["folders", user.id] });
+    },
+  });
 
   return (
     <Sidebar>
@@ -63,7 +81,12 @@ export function BoardSidebar({ user, folders }: BoardSidebarProps) {
         <SidebarGroup>
           <SidebarGroupLabel className="flex items-center justify-between">
             <span>Folders</span>
-            <Button size="sm" variant="ghost" className="h-6 w-6 p-0">
+            <Button
+              onClick={() => addFolderMutation.mutate()}
+              size="sm"
+              variant="ghost"
+              className="h-6 w-6 p-0"
+            >
               <Plus className="w-3 h-3" />
             </Button>
           </SidebarGroupLabel>
@@ -81,7 +104,12 @@ export function BoardSidebar({ user, folders }: BoardSidebarProps) {
                       <Button size="sm" variant="ghost" className="h-6 w-6 p-0">
                         <Pencil className="w-3 h-3" />
                       </Button>
-                      <Button size="sm" variant="ghost" className="h-6 w-6 p-0">
+                      <Button
+                        onClick={() => deleteFolderMutation.mutate(folder.id)}
+                        size="sm"
+                        variant="ghost"
+                        className="h-6 w-6 p-0"
+                      >
                         <Trash2 className="w-3 h-3" />
                       </Button>
                     </div>
