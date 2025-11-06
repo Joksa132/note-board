@@ -7,6 +7,7 @@ import { useMutation, type QueryClient } from "@tanstack/react-query";
 import { deleteFolder, renameFolder } from "@/lib/folders";
 import { useRouter } from "@tanstack/react-router";
 import { useState } from "react";
+import { toast } from "sonner";
 
 type SidebarFolderActionsProps = {
   folder: Folder;
@@ -45,6 +46,10 @@ export function SidebarFolderActions({
     }) => renameFolder(folderId, newName),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["folders", userId] });
+      toast.success("Folder renamed successfully");
+    },
+    onError: (err) => {
+      toast.error(err.message || "Failed to rename folder");
     },
   });
 
@@ -52,10 +57,14 @@ export function SidebarFolderActions({
     mutationFn: (folderId: string) => deleteFolder(folderId),
     onSuccess: (_, folderId) => {
       queryClient.invalidateQueries({ queryKey: ["folders", userId] });
+      toast.success(`Folder "${folder.name}" deleted successfully`);
 
       if (currentPath === `/board/${folderId}`) {
         router.navigate({ to: "/board/all" });
       }
+    },
+    onError: (err) => {
+      toast.error(err.message || `Failed to delete folder "${folder.name}"`);
     },
   });
 

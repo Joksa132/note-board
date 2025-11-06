@@ -20,6 +20,7 @@ import { Link } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addFolder } from "@/lib/folders";
 import { SidebarFolderActions } from "./sidebar-folder-actions";
+import { toast } from "sonner";
 
 type BoardSidebarProps = {
   user: User;
@@ -39,6 +40,10 @@ export function BoardSidebar({ user, folders }: BoardSidebarProps) {
     mutationFn: () => addFolder(user.id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["folders", user.id] });
+      toast.success("New folder added successfully");
+    },
+    onError: (err) => {
+      toast.error(err.message || "Failed to add new folder");
     },
   });
 
