@@ -1,4 +1,4 @@
-import { Home, LogOut, Pencil, Plus, StickyNote, Trash2 } from "lucide-react";
+import { Home, LogOut, Plus, StickyNote } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -18,8 +18,8 @@ import { Avatar, AvatarFallback } from "./ui/avatar";
 import type { Folder, User } from "@/lib/types";
 import { Link } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { addFolder, deleteFolder } from "@/lib/folders";
-import { useRouter } from "@tanstack/react-router";
+import { addFolder } from "@/lib/folders";
+import { SidebarFolderActions } from "./sidebar-folder-actions";
 
 type BoardSidebarProps = {
   user: User;
@@ -28,8 +28,6 @@ type BoardSidebarProps = {
 
 export function BoardSidebar({ user, folders }: BoardSidebarProps) {
   const queryClient = useQueryClient();
-  const router = useRouter();
-  const currentPath = router.state.location.pathname;
 
   const userInitials = user.name
     ?.split(" ")
@@ -41,17 +39,6 @@ export function BoardSidebar({ user, folders }: BoardSidebarProps) {
     mutationFn: () => addFolder(user.id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["folders", user.id] });
-    },
-  });
-
-  const deleteFolderMutation = useMutation({
-    mutationFn: (folderId: string) => deleteFolder(folderId),
-    onSuccess: (_, folderId) => {
-      queryClient.invalidateQueries({ queryKey: ["folders", user.id] });
-
-      if (currentPath === `/board/${folderId}`) {
-        router.navigate({ to: "/board/all" });
-      }
     },
   });
 
@@ -107,19 +94,12 @@ export function BoardSidebar({ user, folders }: BoardSidebarProps) {
                         <span className="flex-1 truncate">{folder.name}</span>
                       </Link>
                     </SidebarMenuButton>
-                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity pr-2">
-                      <Button size="sm" variant="ghost" className="h-6 w-6 p-0">
-                        <Pencil className="w-3 h-3" />
-                      </Button>
-                      <Button
-                        onClick={() => deleteFolderMutation.mutate(folder.id)}
-                        size="sm"
-                        variant="ghost"
-                        className="h-6 w-6 p-0"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </Button>
-                    </div>
+
+                    <SidebarFolderActions
+                      folder={folder}
+                      userId={user.id}
+                      queryClient={queryClient}
+                    />
                   </div>
                 </SidebarMenuItem>
               ))}

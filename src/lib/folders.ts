@@ -36,3 +36,16 @@ export async function deleteFolder(folderId: string) {
 
   return data;
 }
+
+export async function renameFolder(folderId: string, newName: string) {
+  const res = await fetch("/api/folder/edit", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ folderId, newName }),
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Failed to rename folder");
+
+  return data;
+}
