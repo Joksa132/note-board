@@ -1,5 +1,9 @@
 import { BoardSidebar } from "@/components/board-sidebar";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 import { getCurrentUser, registerUser } from "@/lib/auth";
 import { getFolders } from "@/lib/folders";
 import { getNotes } from "@/lib/notes";
@@ -39,19 +43,28 @@ function BoardLayout() {
   const noteCount = notes.length;
 
   return (
-    <div className="min-h-screen flex">
-      <SidebarProvider>
-        {user && (
-          <BoardSidebar
-            user={user}
-            folders={folders ?? []}
-            noteCount={noteCount}
-          />
-        )}
-      </SidebarProvider>
-      <main className="flex-1 p-4">
-        <Outlet />
-      </main>
-    </div>
+    <SidebarProvider>
+      <div className="min-h-screen w-full flex flex-col overflow-hidden">
+        <div className="flex flex-1 overflow-hidden">
+          {user && (
+            <BoardSidebar
+              user={user}
+              folders={folders ?? []}
+              noteCount={noteCount}
+            />
+          )}
+
+          <SidebarInset className="flex flex-col flex-1 overflow-hidden">
+            <div className="flex h-12 items-center px-4 border-b shrink-0">
+              <SidebarTrigger />
+            </div>
+
+            <main className="flex-1 p-4 pt-4 overflow-auto">
+              <Outlet />
+            </main>
+          </SidebarInset>
+        </div>
+      </div>
+    </SidebarProvider>
   );
 }
