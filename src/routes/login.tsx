@@ -20,9 +20,7 @@ function LoginPage() {
         <div className="text-center mb-8">
           <Link to="/" className="flex justify-center items-center gap-2 mb-4">
             <StickyNote className="w-10 h-10" />
-            <span className="text-2xl font-bold text-gray-900">
-              Sticky Notes
-            </span>
+            <span className="text-2xl font-bold text-gray-900">Note Board</span>
           </Link>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Welcome back

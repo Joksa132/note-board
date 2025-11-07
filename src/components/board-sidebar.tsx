@@ -54,7 +54,7 @@ export function BoardSidebar({ user, folders, noteCount }: BoardSidebarProps) {
       <SidebarHeader>
         <div className="flex items-center gap-2 p-2">
           <StickyNote className="w-6 h-6" />
-          <span className="text-lg font-bold">Sticky Notes</span>
+          <span className="text-lg font-bold">Note Board</span>
         </div>
       </SidebarHeader>
 
