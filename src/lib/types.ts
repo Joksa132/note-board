@@ -11,3 +11,17 @@ export type Folder = {
   name: string;
   user_id: string;
 };
+
+export type Note = {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  user_id: string;
+  folder_id: string | null;
+  color: string;
+  width: number;
+  height: number;
+  pos_x: number;
+  pos_y: number;
+  content: string | null;
+};

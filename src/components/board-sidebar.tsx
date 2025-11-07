@@ -21,13 +21,15 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addFolder } from "@/lib/folders";
 import { SidebarFolderActions } from "./sidebar-folder-actions";
 import { toast } from "sonner";
+import { NewNoteDialog } from "./new-note-dialog";
 
 type BoardSidebarProps = {
   user: User;
   folders: Folder[];
+  noteCount: number;
 };
 
-export function BoardSidebar({ user, folders }: BoardSidebarProps) {
+export function BoardSidebar({ user, folders, noteCount }: BoardSidebarProps) {
   const queryClient = useQueryClient();
 
   const userInitials = user.name
@@ -68,7 +70,7 @@ export function BoardSidebar({ user, folders }: BoardSidebarProps) {
                       <span className="font-medium">All Notes</span>
                     </Link>
                   </div>
-                  <span className="text-xs opacity-75">Note Count</span>
+                  <span className="text-xs opacity-75">{noteCount}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -142,7 +144,11 @@ export function BoardSidebar({ user, folders }: BoardSidebarProps) {
               <LogOut className="w-4 h-4" />
             </Button>
           </div>
-          <span>new note button here</span>
+          <NewNoteDialog
+            queryClient={queryClient}
+            userId={user.id}
+            folderId={null}
+          />
         </div>
       </SidebarFooter>
     </Sidebar>
