@@ -15,6 +15,8 @@ function AllNotesPage() {
   const { data: user } = useQuery<User | null>({
     queryKey: ["currentUser"],
     queryFn: getCurrentUser,
+    staleTime: 1000 * 60 * 30,
+    refetchOnWindowFocus: false,
   });
 
   const { data: notes = [] } = useQuery<Note[]>({

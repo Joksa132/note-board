@@ -17,7 +17,7 @@ export const Route = createFileRoute("/board")({
 
     if (!user) throw redirect({ to: "/login" });
 
-    await registerUser();
+    await registerUser(user);
   },
   component: BoardLayout,
 });
@@ -26,6 +26,8 @@ function BoardLayout() {
   const { data: user } = useQuery<User | null>({
     queryKey: ["currentUser"],
     queryFn: getCurrentUser,
+    staleTime: 1000 * 60 * 30,
+    refetchOnWindowFocus: false,
   });
 
   const { data: folders = [] } = useQuery({

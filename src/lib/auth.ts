@@ -1,4 +1,5 @@
 import { supabase } from "./supabase";
+import type { User } from "./types";
 
 export async function getCurrentUser() {
   const { data } = await supabase.auth.getUser();
@@ -14,19 +15,20 @@ export async function getCurrentUser() {
   };
 }
 
-export async function registerUser() {
-  const user = await getCurrentUser();
+export async function registerUser(user: User) {
+  const { data } = await supabase
+    .from("users")
+    .select("id")
+    .eq("id", user.id)
+    .single();
 
-  if (!user) return;
-
-  const res = await fetch("/api/auth/register-user", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ user }),
-  });
-
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || "Failed to register user");
+  if (!data) {
+    await fetch("/api/auth/register-user", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user }),
+    });
+  }
 }
 
 export async function handleLogin(provider: "google" | "github") {
