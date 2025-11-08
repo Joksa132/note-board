@@ -18,7 +18,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const { error } = await supabase
       .from("notes")
-      .update({ content, color, width, height, pos_x, pos_y })
+      .update({
+        content,
+        color,
+        width: Math.round(width),
+        height: Math.round(height),
+        pos_x,
+        pos_y,
+      })
       .eq("id", noteId);
 
     if (error) throw error;

@@ -1,7 +1,7 @@
 import type { Note } from "@/lib/types";
 import { Button } from "./ui/button";
-import { useState } from "react";
-import { Eye, Palette, Save, Trash2, Type } from "lucide-react";
+import { useRef, useState } from "react";
+import { Eye, MoveDiagonal2, Palette, Save, Trash2, Type } from "lucide-react";
 import { useMutation, type QueryClient } from "@tanstack/react-query";
 import { deleteNote, updateNote } from "@/lib/notes";
 import { toast } from "sonner";
@@ -24,6 +24,9 @@ export function NoteCard({ note, userId, queryClient }: NoteCardProps) {
     note.color || ["yellow", "black"]
   );
   const [popoverOpen, setPopoverOpen] = useState(false);
+  const [width, setWidth] = useState(note.width);
+  const [height, setHeight] = useState(note.height);
+  const cardRef = useRef<HTMLDivElement | null>(null);
 
   const deleteNoteMutation = useMutation({
     mutationFn: () => deleteNote(note.id),
@@ -42,8 +45,8 @@ export function NoteCard({ note, userId, queryClient }: NoteCardProps) {
         note.id,
         content,
         color,
-        note.width,
-        note.height,
+        width,
+        height,
         note.pos_x,
         note.pos_y
       ),
@@ -56,14 +59,42 @@ export function NoteCard({ note, userId, queryClient }: NoteCardProps) {
     },
   });
 
+  const handleResize = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const startWidth = width;
+    const startHeight = height;
+
+    const onPointerMove = (moveEvent: PointerEvent) => {
+      const deltaX = moveEvent.clientX - startX;
+      const deltaY = moveEvent.clientY - startY;
+      setWidth(Math.max(200, startWidth + deltaX));
+      setHeight(Math.max(200, startHeight + deltaY));
+    };
+
+    const onPointerUp = () => {
+      updateNoteMutation.mutate();
+
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", onPointerUp);
+    };
+
+    window.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("pointerup", onPointerUp);
+  };
+
   return (
     <div
+      ref={cardRef}
       className="absolute rounded-xl border-2 shadow-lg cursor-grab"
       style={{
         left: `${note.pos_x}px`,
         top: `${note.pos_y}px`,
-        width: `${note.width}px`,
-        height: `${note.height}px`,
+        width: `${width}px`,
+        height: `${height}px`,
         backgroundColor: note.color[0],
         color: note.color[1],
       }}
@@ -190,6 +221,13 @@ export function NoteCard({ note, userId, queryClient }: NoteCardProps) {
               className="h-full resize-none bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-muted-foreground/60 p-0"
             />
           )}
+        </div>
+
+        <div
+          onPointerDown={handleResize}
+          className="absolute bottom-1 right-1 cursor-se-resize"
+        >
+          <MoveDiagonal2 className="w-4 h-4 text-black/50 hover:text-black" />
         </div>
       </div>
     </div>
