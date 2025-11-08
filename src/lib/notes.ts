@@ -41,7 +41,7 @@ export async function deleteNote(noteId: string) {
 export async function updateNote(
   noteId: string,
   content: string,
-  color: string,
+  color: [string, string],
   width: number,
   height: number,
   pos_x: number,

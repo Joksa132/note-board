@@ -18,7 +18,7 @@ export type Note = {
   updated_at: string;
   user_id: string;
   folder_id: string | null;
-  color: string;
+  color: [string, string];
   width: number;
   height: number;
   pos_x: number;

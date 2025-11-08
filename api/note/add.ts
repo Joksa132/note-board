@@ -24,7 +24,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         {
           user_id: userId,
           folder_id: folderId || null,
-          color: "yellow",
+          color: ["yellow", "black"],
           width: 200,
           height: 200,
           pos_x: 0,
