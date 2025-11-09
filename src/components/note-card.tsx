@@ -1,6 +1,6 @@
 import type { Note } from "@/lib/types";
 import { Button } from "./ui/button";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Eye, MoveDiagonal2, Palette, Save, Trash2, Type } from "lucide-react";
 import { useMutation, type QueryClient } from "@tanstack/react-query";
 import { deleteNote, updateNote } from "@/lib/notes";
@@ -10,14 +10,31 @@ import remarkGfm from "remark-gfm";
 import { Textarea } from "./ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { BG_COLORS, TEXT_COLORS } from "@/lib/utils";
+import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 
 type NoteCardProps = {
   note: Note;
   userId: string;
   queryClient: QueryClient;
+  boardRef: React.RefObject<HTMLDivElement | null>;
 };
 
-export function NoteCard({ note, userId, queryClient }: NoteCardProps) {
+type UpdateNotePayload = {
+  id: string;
+  pos_x: number;
+  pos_y: number;
+  width: number;
+  height: number;
+  content: string;
+  color: [string, string];
+};
+
+export function NoteCard({
+  note,
+  userId,
+  queryClient,
+  boardRef,
+}: NoteCardProps) {
   const [isPreview, setIsPreview] = useState(true);
   const [content, setContent] = useState(note.content || "");
   const [color, setColor] = useState<[string, string]>(
@@ -27,6 +44,8 @@ export function NoteCard({ note, userId, queryClient }: NoteCardProps) {
   const [width, setWidth] = useState(note.width);
   const [height, setHeight] = useState(note.height);
   const cardRef = useRef<HTMLDivElement | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [pos, setPos] = useState({ x: note.pos_x, y: note.pos_y });
 
   const deleteNoteMutation = useMutation({
     mutationFn: () => deleteNote(note.id),
@@ -40,15 +59,15 @@ export function NoteCard({ note, userId, queryClient }: NoteCardProps) {
   });
 
   const updateNoteMutation = useMutation({
-    mutationFn: () =>
+    mutationFn: (payload: UpdateNotePayload) =>
       updateNote(
-        note.id,
-        content,
-        color,
-        width,
-        height,
-        note.pos_x,
-        note.pos_y
+        payload.id,
+        payload.content,
+        payload.color,
+        payload.width,
+        payload.height,
+        payload.pos_x,
+        payload.pos_y
       ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notes", userId] });
@@ -76,7 +95,15 @@ export function NoteCard({ note, userId, queryClient }: NoteCardProps) {
     };
 
     const onPointerUp = () => {
-      updateNoteMutation.mutate();
+      updateNoteMutation.mutate({
+        id: note.id,
+        pos_x: Math.round(pos.x),
+        pos_y: Math.round(pos.y),
+        width: Math.round(width),
+        height: Math.round(height),
+        content,
+        color,
+      });
 
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("pointerup", onPointerUp);
@@ -86,13 +113,77 @@ export function NoteCard({ note, userId, queryClient }: NoteCardProps) {
     window.addEventListener("pointerup", onPointerUp);
   };
 
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+
+    let initialMouseX = 0;
+    let initialMouseY = 0;
+    let initialPosX = 0;
+    let initialPosY = 0;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    const cleanup = draggable({
+      element: el,
+      getInitialData: () => ({
+        noteId: note.id,
+      }),
+      onDragStart: (args) => {
+        setIsDragging(true);
+        const input = args.location.current.input;
+        const rect = el.getBoundingClientRect();
+
+        initialMouseX = input.clientX;
+        initialMouseY = input.clientY;
+
+        initialPosX = pos.x;
+        initialPosY = pos.y;
+
+        const boardRect = boardRef.current?.getBoundingClientRect();
+        if (boardRect) {
+          offsetX = input.clientX - boardRect.left - pos.x;
+          offsetY = input.clientY - boardRect.top - pos.y;
+        }
+      },
+      onDrag: (args) => {
+        const input = args.location.current.input;
+        const boardRect = boardRef.current?.getBoundingClientRect();
+
+        if (!boardRect) return;
+
+        const newX = input.clientX - boardRect.left - offsetX;
+        const newY = input.clientY - boardRect.top - offsetY;
+
+        setPos({ x: newX, y: newY });
+      },
+      onDrop: () => {
+        setIsDragging(false);
+        updateNoteMutation.mutate({
+          id: note.id,
+          pos_x: Math.round(pos.x),
+          pos_y: Math.round(pos.y),
+          width: Math.round(width),
+          height: Math.round(height),
+          content,
+          color,
+        });
+      },
+    });
+
+    return () => {
+      cleanup();
+    };
+  }, [note.id, width, height, content, color, updateNoteMutation]);
+
   return (
     <div
       ref={cardRef}
       className="absolute rounded-xl border-2 shadow-lg cursor-grab"
       style={{
-        left: `${note.pos_x}px`,
-        top: `${note.pos_y}px`,
+        left: `${pos.x}px`,
+        top: `${pos.y}px`,
+        zIndex: isDragging ? 1000 : undefined,
         width: `${width}px`,
         height: `${height}px`,
         backgroundColor: note.color[0],
@@ -104,7 +195,17 @@ export function NoteCard({ note, userId, queryClient }: NoteCardProps) {
           <div className="flex items-center gap-1">
             {!isPreview && (
               <Button
-                onClick={() => updateNoteMutation.mutate()}
+                onClick={() =>
+                  updateNoteMutation.mutate({
+                    id: note.id,
+                    pos_x: Math.round(pos.x),
+                    pos_y: Math.round(pos.y),
+                    width: Math.round(width),
+                    height: Math.round(height),
+                    content,
+                    color,
+                  })
+                }
                 size="sm"
                 variant="ghost"
                 className="h-8 w-8 p-0 hover:bg-black/5 dark:hover:bg-white/5"
@@ -185,7 +286,15 @@ export function NoteCard({ note, userId, queryClient }: NoteCardProps) {
                     </Button>
                     <Button
                       onClick={() => {
-                        updateNoteMutation.mutate();
+                        updateNoteMutation.mutate({
+                          id: note.id,
+                          pos_x: Math.round(pos.x),
+                          pos_y: Math.round(pos.y),
+                          width: Math.round(width),
+                          height: Math.round(height),
+                          content,
+                          color,
+                        });
                         setPopoverOpen(false);
                       }}
                       className="flex-1"
