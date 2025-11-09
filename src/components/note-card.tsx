@@ -1,7 +1,15 @@
 import type { Note } from "@/lib/types";
 import { Button } from "./ui/button";
 import { useEffect, useRef, useState } from "react";
-import { Eye, MoveDiagonal2, Palette, Save, Trash2, Type } from "lucide-react";
+import {
+  Eye,
+  GripVertical,
+  MoveDiagonal2,
+  Palette,
+  Save,
+  Trash2,
+  Type,
+} from "lucide-react";
 import { useMutation, type QueryClient } from "@tanstack/react-query";
 import { deleteNote, updateNote } from "@/lib/notes";
 import { toast } from "sonner";
@@ -44,6 +52,7 @@ export function NoteCard({
   const [width, setWidth] = useState(note.width);
   const [height, setHeight] = useState(note.height);
   const cardRef = useRef<HTMLDivElement | null>(null);
+  const dragHandleRef = useRef<HTMLDivElement | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [pos, setPos] = useState({ x: note.pos_x, y: note.pos_y });
   const [zIndex, setZIndex] = useState(1);
@@ -115,7 +124,7 @@ export function NoteCard({
   };
 
   useEffect(() => {
-    const el = cardRef.current;
+    const el = dragHandleRef.current;
     if (!el) return;
 
     let initialMouseX = 0;
@@ -182,7 +191,7 @@ export function NoteCard({
   return (
     <div
       ref={cardRef}
-      className="absolute rounded-xl border-2 shadow-lg cursor-grab"
+      className="absolute rounded-xl border-2 shadow-lg"
       onClick={() => setZIndex(999)}
       style={{
         left: `${pos.x}px`,
@@ -197,26 +206,13 @@ export function NoteCard({
       <div className="p-4 h-full flex flex-col">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-1">
-            {!isPreview && (
-              <Button
-                onClick={() =>
-                  updateNoteMutation.mutate({
-                    id: note.id,
-                    pos_x: Math.round(pos.x),
-                    pos_y: Math.round(pos.y),
-                    width: Math.round(width),
-                    height: Math.round(height),
-                    content,
-                    color,
-                  })
-                }
-                size="sm"
-                variant="ghost"
-                className="h-8 w-8 p-0 hover:bg-black/5 dark:hover:bg-white/5"
-              >
-                <Save className="w-4 h-4" />
-              </Button>
-            )}
+            <div
+              ref={dragHandleRef}
+              className="h-8 w-8 p-0 hover:bg-black/5 dark:hover:bg-white/5 cursor-grab active:cursor-grabbing flex items-center justify-center rounded"
+              title="Drag to move"
+            >
+              <GripVertical className="w-4 h-4" />
+            </div>
             <Button
               onClick={() => setIsPreview(!isPreview)}
               size="sm"
@@ -314,9 +310,30 @@ export function NoteCard({
               size="sm"
               variant="ghost"
               className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
+              title="Delete note"
             >
               <Trash2 className="w-4 h-4" />
             </Button>
+            {!isPreview && (
+              <Button
+                onClick={() =>
+                  updateNoteMutation.mutate({
+                    id: note.id,
+                    pos_x: Math.round(pos.x),
+                    pos_y: Math.round(pos.y),
+                    width: Math.round(width),
+                    height: Math.round(height),
+                    content,
+                    color,
+                  })
+                }
+                size="sm"
+                variant="ghost"
+                className="h-8 w-8 p-0 hover:bg-black/5 dark:hover:bg-white/5"
+              >
+                <Save className="w-4 h-4" />
+              </Button>
+            )}
           </div>
         </div>
         <div className="flex-1 overflow-auto">
@@ -339,6 +356,7 @@ export function NoteCard({
         <div
           onPointerDown={handleResize}
           className="absolute bottom-1 right-1 cursor-se-resize"
+          title="Drag to resize"
         >
           <MoveDiagonal2 className="w-4 h-4 text-black/50 hover:text-black" />
         </div>
