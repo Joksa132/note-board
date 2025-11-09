@@ -46,6 +46,7 @@ export function NoteCard({
   const cardRef = useRef<HTMLDivElement | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [pos, setPos] = useState({ x: note.pos_x, y: note.pos_y });
+  const [zIndex, setZIndex] = useState(1);
 
   const deleteNoteMutation = useMutation({
     mutationFn: () => deleteNote(note.id),
@@ -131,6 +132,7 @@ export function NoteCard({
       }),
       onDragStart: (args) => {
         setIsDragging(true);
+        setZIndex(1000);
         const input = args.location.current.input;
         const rect = el.getBoundingClientRect();
 
@@ -159,6 +161,7 @@ export function NoteCard({
       },
       onDrop: () => {
         setIsDragging(false);
+        setZIndex(999);
         updateNoteMutation.mutate({
           id: note.id,
           pos_x: Math.round(pos.x),
@@ -180,10 +183,11 @@ export function NoteCard({
     <div
       ref={cardRef}
       className="absolute rounded-xl border-2 shadow-lg cursor-grab"
+      onClick={() => setZIndex(999)}
       style={{
         left: `${pos.x}px`,
         top: `${pos.y}px`,
-        zIndex: isDragging ? 1000 : undefined,
+        zIndex: isDragging ? 1000 : zIndex,
         width: `${width}px`,
         height: `${height}px`,
         backgroundColor: note.color[0],
