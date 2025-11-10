@@ -237,7 +237,7 @@ export function NoteCard({
                   <Palette className="w-4 h-4" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-64">
+              <PopoverContent className="w-64 z-1001 mt-12">
                 <div className="flex flex-col gap-3">
                   <div>
                     <p className="text-sm font-medium mb-1">Background</p>
