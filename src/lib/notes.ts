@@ -11,6 +11,17 @@ export async function getNotes(userId: string) {
   return data as Note[];
 }
 
+export async function getFolderNotes(userId: string, folderId: string) {
+  const { data, error } = await supabase
+    .from("notes")
+    .select("*")
+    .eq("user_id", userId)
+    .eq("folder_id", folderId);
+
+  if (error) throw new Error(error.message);
+  return data as Note[];
+}
+
 export async function addNote(userId: string, folderId?: string | null) {
   const res = await fetch("/api/note/add", {
     method: "POST",
