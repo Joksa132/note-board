@@ -339,7 +339,7 @@ export function NoteCard({
         </div>
         <div className="flex-1 overflow-auto">
           {isPreview ? (
-            <div className="prose prose-sm dark:prose-invert max-w-none">
+            <div className="prose prose-sm max-w-none prose-headings:font-bold prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-ul:list-disc prose-ol:list-decimal prose-li:ml-4">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {note.content || "*No content*"}
               </ReactMarkdown>
