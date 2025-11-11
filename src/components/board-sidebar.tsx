@@ -1,4 +1,4 @@
-import { Home, LogOut, Plus, StickyNote } from "lucide-react";
+import { Folder, Home, LogOut, Plus, StickyNote } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -103,7 +103,8 @@ export function BoardSidebar({ user, folders, noteCount }: BoardSidebarProps) {
                 return (
                   <SidebarMenuItem key={folder.id}>
                     <div className="flex items-center gap-2 group">
-                      <SidebarMenuButton className="flex-1 cursor-pointer">
+                      <SidebarMenuButton className="flex-1 cursor-pointer flex items-center gap-2">
+                        <Folder className="w-4 h-4 text-muted-foreground" />
                         <Link
                           to="/board/$folder"
                           params={{ folder: folder.id }}
