@@ -46,7 +46,7 @@ export function NewNoteDialog({
           New Note
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="z-1002">
         <DialogHeader>
           <DialogTitle>Create New Note</DialogTitle>
           <DialogDescription>
