@@ -19,6 +19,7 @@ import { Textarea } from "./ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { BG_COLORS, TEXT_COLORS } from "@/lib/utils";
 import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import { useDragContext } from "./drag-context";
 
 type NoteCardProps = {
   note: Note;
@@ -53,7 +54,7 @@ export function NoteCard({
   const [height, setHeight] = useState(note.height);
   const cardRef = useRef<HTMLDivElement | null>(null);
   const dragHandleRef = useRef<HTMLDivElement | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
+  const { isDragging, setIsDragging } = useDragContext();
   const [pos, setPos] = useState({ x: note.pos_x, y: note.pos_y });
   const [zIndex, setZIndex] = useState(1);
 

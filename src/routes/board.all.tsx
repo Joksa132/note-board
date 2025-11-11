@@ -1,7 +1,8 @@
+import { FolderDropBar } from "@/components/folder-drop-zone";
 import { NoteCard } from "@/components/note-card";
 import { getCurrentUser } from "@/lib/auth";
 import { getNotes } from "@/lib/notes";
-import type { Note, User } from "@/lib/types";
+import type { Folder, Note, User } from "@/lib/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useRef } from "react";
@@ -27,8 +28,15 @@ function AllNotesPage() {
     enabled: !!user,
   });
 
+  const allFolders =
+    queryClient.getQueryData<Folder[]>(["folders", user?.id]) ?? [];
+
   return (
     <div className="relative w-full h-full overflow-hidden" ref={boardRef}>
+      {user && allFolders && (
+        <FolderDropBar folders={allFolders} userId={user.id} />
+      )}
+
       {notes.map((note) => (
         <NoteCard
           note={note}
