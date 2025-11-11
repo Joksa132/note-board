@@ -207,16 +207,17 @@ export function NoteCard({
         color: note.color[1],
       }}
     >
+      <div
+        ref={dragHandleRef}
+        className="absolute top-2 left-2 p-1 hover:bg-black/5 cursor-grab active:cursor-grabbing"
+        title="Drag to move"
+      >
+        <GripVertical className="w-5 h-5" />
+      </div>
+
       <div className="p-4 h-full flex flex-col">
         <div className="flex items-start justify-between mb-3">
-          <div className="flex items-center gap-1">
-            <div
-              ref={dragHandleRef}
-              className="h-8 w-8 p-0 hover:bg-black/5 cursor-grab active:cursor-grabbing flex items-center justify-center rounded"
-              title="Drag to move"
-            >
-              <GripVertical className="w-4 h-4" />
-            </div>
+          <div className="w-full flex items-center justify-end gap-1">
             <Button
               onClick={() => setIsPreview(!isPreview)}
               size="sm"
