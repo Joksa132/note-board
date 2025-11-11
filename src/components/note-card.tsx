@@ -101,8 +101,8 @@ export function NoteCard({
     const onPointerMove = (moveEvent: PointerEvent) => {
       const deltaX = moveEvent.clientX - startX;
       const deltaY = moveEvent.clientY - startY;
-      setWidth(Math.max(200, startWidth + deltaX));
-      setHeight(Math.max(200, startHeight + deltaY));
+      setWidth(Math.max(250, startWidth + deltaX));
+      setHeight(Math.max(250, startHeight + deltaY));
     };
 
     const onPointerUp = () => {
@@ -209,7 +209,7 @@ export function NoteCard({
           <div className="flex items-center gap-1">
             <div
               ref={dragHandleRef}
-              className="h-8 w-8 p-0 hover:bg-black/5 dark:hover:bg-white/5 cursor-grab active:cursor-grabbing flex items-center justify-center rounded"
+              className="h-8 w-8 p-0 hover:bg-black/5 cursor-grab active:cursor-grabbing flex items-center justify-center rounded"
               title="Drag to move"
             >
               <GripVertical className="w-4 h-4" />
@@ -218,7 +218,7 @@ export function NoteCard({
               onClick={() => setIsPreview(!isPreview)}
               size="sm"
               variant="ghost"
-              className="h-8 w-8 p-0 hover:bg-black/5 dark:hover:bg-white/5"
+              className="h-8 w-8 p-0 hover:bg-black/5"
               title={isPreview ? "Edit" : "Preview"}
             >
               {isPreview ? (
@@ -232,7 +232,7 @@ export function NoteCard({
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="h-8 w-8 p-0 hover:bg-black/5 dark:hover:bg-white/5"
+                  className="h-8 w-8 p-0 hover:bg-black/5"
                   title="Change colors"
                 >
                   <Palette className="w-4 h-4" />
@@ -330,7 +330,7 @@ export function NoteCard({
                 }
                 size="sm"
                 variant="ghost"
-                className="h-8 w-8 p-0 hover:bg-black/5 dark:hover:bg-white/5"
+                className="h-8 w-8 p-0 hover:bg-black/5"
               >
                 <Save className="w-4 h-4" />
               </Button>
