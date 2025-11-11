@@ -15,7 +15,7 @@ import {
 import { Button } from "./ui/button";
 import { handleLogout } from "@/lib/auth";
 import { Avatar, AvatarFallback } from "./ui/avatar";
-import type { Folder, User } from "@/lib/types";
+import type { Folder, Note, User } from "@/lib/types";
 import { Link } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addFolder } from "@/lib/folders";
@@ -48,6 +48,8 @@ export function BoardSidebar({ user, folders, noteCount }: BoardSidebarProps) {
       toast.error(err.message || "Failed to add new folder");
     },
   });
+
+  const notes = queryClient.getQueryData<Note[]>(["notes", user?.id]) ?? [];
 
   return (
     <Sidebar>
@@ -93,23 +95,36 @@ export function BoardSidebar({ user, folders, noteCount }: BoardSidebarProps) {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {folders.map((folder) => (
-                <SidebarMenuItem key={folder.id}>
-                  <div className="flex items-center gap-2 group">
-                    <SidebarMenuButton className="flex-1 cursor-pointer">
-                      <Link to="/board/$folder" params={{ folder: folder.id }}>
-                        <span className="flex-1 truncate">{folder.name}</span>
-                      </Link>
-                    </SidebarMenuButton>
+              {folders.map((folder) => {
+                const folderNoteCount = folder.id
+                  ? notes.filter((note) => note.folder_id === folder.id).length
+                  : 0;
 
-                    <SidebarFolderActions
-                      folder={folder}
-                      userId={user.id}
-                      queryClient={queryClient}
-                    />
-                  </div>
-                </SidebarMenuItem>
-              ))}
+                return (
+                  <SidebarMenuItem key={folder.id}>
+                    <div className="flex items-center gap-2 group">
+                      <SidebarMenuButton className="flex-1 cursor-pointer">
+                        <Link
+                          to="/board/$folder"
+                          params={{ folder: folder.id }}
+                        >
+                          <span className="flex-1 truncate">{folder.name}</span>
+                        </Link>
+                      </SidebarMenuButton>
+
+                      <span className="text-xs opacity-75">
+                        {folderNoteCount}
+                      </span>
+
+                      <SidebarFolderActions
+                        folder={folder}
+                        userId={user.id}
+                        queryClient={queryClient}
+                      />
+                    </div>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
