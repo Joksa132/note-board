@@ -1,4 +1,5 @@
 import { BoardSidebar } from "@/components/board-sidebar";
+import { DragProvider } from "@/components/drag-context";
 import {
   SidebarInset,
   SidebarProvider,
@@ -46,27 +47,29 @@ function BoardLayout() {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen w-full flex flex-col overflow-hidden">
-        <div className="flex flex-1 overflow-hidden">
-          {user && (
-            <BoardSidebar
-              user={user}
-              folders={folders ?? []}
-              noteCount={noteCount}
-            />
-          )}
+      <DragProvider>
+        <div className="min-h-screen w-full flex flex-col overflow-hidden">
+          <div className="flex flex-1 overflow-hidden">
+            {user && (
+              <BoardSidebar
+                user={user}
+                folders={folders ?? []}
+                noteCount={noteCount}
+              />
+            )}
 
-          <SidebarInset className="flex flex-col flex-1 overflow-hidden">
-            <div className="flex h-12 items-center px-4 border-b shrink-0">
-              <SidebarTrigger />
-            </div>
+            <SidebarInset className="flex flex-col flex-1 overflow-hidden">
+              <div className="flex h-12 items-center px-4 border-b shrink-0">
+                <SidebarTrigger />
+              </div>
 
-            <main className="flex-1 p-4 pt-4 overflow-auto">
-              <Outlet />
-            </main>
-          </SidebarInset>
+              <main className="flex-1 p-4 pt-4 overflow-auto">
+                <Outlet />
+              </main>
+            </SidebarInset>
+          </div>
         </div>
-      </div>
+      </DragProvider>
     </SidebarProvider>
   );
 }
