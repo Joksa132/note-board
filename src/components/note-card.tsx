@@ -52,7 +52,6 @@ export function NoteCard({
   const [color, setColor] = useState<[string, string]>(
     note.color || ["yellow", "black"]
   );
-  const [popoverOpen, setPopoverOpen] = useState(false);
   const [width, setWidth] = useState(note.width);
   const [height, setHeight] = useState(note.height);
   const cardRef = useRef<HTMLDivElement | null>(null);
@@ -232,7 +231,11 @@ export function NoteCard({
               )}
             </Button>
 
-            <AiActionsPopover />
+            <AiActionsPopover
+              note={note}
+              userId={userId}
+              setIsPreview={setIsPreview}
+            />
 
             <ColorPopover
               color={color}

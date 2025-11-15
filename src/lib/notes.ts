@@ -98,3 +98,22 @@ export async function createAiNote({
 
   return res.json();
 }
+
+export async function createAiNoteAction(
+  noteId: string,
+  userId: string,
+  action: "expand" | "restyle"
+) {
+  const res = await fetch("/api/note/ai-action", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ noteId, userId, action }),
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.error || "Failed to perform AI action");
+  }
+
+  return res.json();
+}

@@ -1,8 +1,35 @@
 import { Sparkles, Type } from "lucide-react";
 import { Button } from "./ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import type { Note } from "@/lib/types";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createAiNoteAction } from "@/lib/notes";
 
-export function AiActionsPopover() {
+type AiActionsPopoverProps = {
+  note: Note;
+  userId: string;
+  setIsPreview: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+export function AiActionsPopover({
+  note,
+  userId,
+  setIsPreview,
+}: AiActionsPopoverProps) {
+  const queryClient = useQueryClient();
+
+  const aiMutation = useMutation({
+    mutationFn: (action: { type: "expand" | "restyle" }) =>
+      createAiNoteAction(note.id, userId, action.type),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notes", userId] });
+      setIsPreview(true);
+    },
+    onError: (err) => {
+      console.error(err);
+    },
+  });
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -21,7 +48,7 @@ export function AiActionsPopover() {
             variant="ghost"
             size="sm"
             className="flex items-center justify-start"
-            onClick={() => {}}
+            onClick={() => aiMutation.mutate({ type: "expand" })}
             title="Expand Content"
           >
             <Sparkles className="w-4 h-4" />
@@ -31,7 +58,7 @@ export function AiActionsPopover() {
             variant="ghost"
             size="sm"
             className="flex items-center justify-start"
-            onClick={() => {}}
+            onClick={() => aiMutation.mutate({ type: "restyle" })}
             title="Restyle Text"
           >
             <Type className="w-4 h-4" />
