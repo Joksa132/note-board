@@ -34,7 +34,7 @@ export async function registerUser(user: User) {
 export async function handleLogin(provider: "google" | "github") {
   const { error } = await supabase.auth.signInWithOAuth({
     provider,
-    options: { redirectTo: `${window.location.origin}/board` },
+    options: { redirectTo: "https://note-board-joksa132.vercel.app/board" },
   });
   if (error) console.log(error.message);
 }
