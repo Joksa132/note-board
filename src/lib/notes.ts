@@ -75,3 +75,26 @@ export async function updateNote(
   if (!res.ok) throw new Error("Failed to update note");
   return res.json();
 }
+
+export async function createAiNote({
+  userId,
+  folderId,
+  prompt,
+}: {
+  userId: string;
+  folderId: string | null;
+  prompt: string;
+}) {
+  const res = await fetch("/api/note/ai-generate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId, folderId, prompt }),
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.error || "Failed to generate AI note");
+  }
+
+  return res.json();
+}
