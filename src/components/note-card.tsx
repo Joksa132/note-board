@@ -5,9 +5,7 @@ import {
   Eye,
   GripVertical,
   MoveDiagonal2,
-  Palette,
   Save,
-  Sparkles,
   Trash2,
   Type,
 } from "lucide-react";
@@ -17,8 +15,6 @@ import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Textarea } from "./ui/textarea";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { BG_COLORS, TEXT_COLORS } from "@/lib/utils";
 import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { useDragContext } from "./drag-context";
 import { AiActionsPopover } from "./ai-actions-popover";
@@ -130,10 +126,6 @@ export function NoteCard({
     const el = dragHandleRef.current;
     if (!el) return;
 
-    let initialMouseX = 0;
-    let initialMouseY = 0;
-    let initialPosX = 0;
-    let initialPosY = 0;
     let offsetX = 0;
     let offsetY = 0;
 
@@ -146,13 +138,6 @@ export function NoteCard({
         setIsDragging(true);
         setZIndex(1000);
         const input = args.location.current.input;
-        const rect = el.getBoundingClientRect();
-
-        initialMouseX = input.clientX;
-        initialMouseY = input.clientY;
-
-        initialPosX = pos.x;
-        initialPosY = pos.y;
 
         const boardRect = boardRef.current?.getBoundingClientRect();
         if (boardRect) {
