@@ -5,7 +5,7 @@ import { routeTree } from "./routeTree.gen";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./index.css";
 import { Toaster } from "./components/ui/sonner";
-import { Analytics } from "@vercel/analytics/next";
+import { inject } from "@vercel/analytics";
 
 const queryClient = new QueryClient({});
 
@@ -22,7 +22,8 @@ createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
       <Toaster />
-      <Analytics />
     </QueryClientProvider>
   </StrictMode>
 );
+
+inject();
