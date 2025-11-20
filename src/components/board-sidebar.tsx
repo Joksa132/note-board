@@ -71,14 +71,16 @@ export function BoardSidebar({ user, folders, noteCount }: BoardSidebarProps) {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton className="w-full flex items-center justify-between cursor-pointer">
+                <SidebarMenuButton className="w-full flex items-center justify-between cursor-pointer bg-blue-100/50">
                   <div className="flex items-center gap-2">
                     <Home className="w-5 h-5" />
                     <Link to="/board/all">
                       <span className="font-medium">All Notes</span>
                     </Link>
                   </div>
-                  <span className="text-xs opacity-75">{noteCount}</span>
+                  <span className="text-xs font-medium opacity-75">
+                    {noteCount}
+                  </span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -139,9 +141,9 @@ export function BoardSidebar({ user, folders, noteCount }: BoardSidebarProps) {
 
       <SidebarFooter>
         <div className="flex flex-col w-full px-2">
-          <div className="flex items-center gap-3 p-2 rounded-lg">
+          <div className="flex items-center gap-3 p-2 rounded-lg bg-blue-100/50 mb-2">
             <Avatar className="h-8 w-8">
-              <AvatarFallback className="bg-black text-white text-xs font-medium">
+              <AvatarFallback className="bg-blue-600 text-white text-xs font-medium">
                 {userInitials}
               </AvatarFallback>
             </Avatar>

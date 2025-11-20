@@ -63,8 +63,11 @@ export function NewNoteDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="w-full" size="lg">
-          <Plus className="w-5 h-5 mr-2" />
+        <Button
+          className="w-full bg-blue-600 flex items-center hover:bg-blue-700"
+          size="lg"
+        >
+          <Plus className="w-4 h-4 mr-1" />
           New Note
         </Button>
       </DialogTrigger>
