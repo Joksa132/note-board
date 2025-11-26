@@ -16,7 +16,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Textarea } from "./ui/textarea";
 import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
-import { useDragContext } from "./drag-context";
+import { useDragContext } from "./providers/drag-context";
 import { AiActionsPopover } from "./ai-actions-popover";
 import { ColorPopover } from "./color-popover";
 

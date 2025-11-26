@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import type { Folder } from "@/lib/types";
-import { useDragContext } from "./drag-context";
+import { useDragContext } from "./providers/drag-context";
 import { useEffect, useRef } from "react";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 

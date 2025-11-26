@@ -1,5 +1,5 @@
 import { BoardSidebar } from "@/components/board-sidebar";
-import { DragProvider } from "@/components/drag-context";
+import { DragProvider } from "@/components/providers/drag-context";
 import {
   SidebarInset,
   SidebarProvider,
