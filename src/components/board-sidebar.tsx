@@ -28,6 +28,7 @@ import { addFolder } from "@/lib/folders";
 import { SidebarFolderActions } from "./sidebar-folder-actions";
 import { toast } from "sonner";
 import { NewNoteDialog } from "./new-note-dialog";
+import { ThemeToggle } from "./theme-toggle";
 
 type BoardSidebarProps = {
   user: User;
@@ -64,6 +65,12 @@ export function BoardSidebar({ user, folders, noteCount }: BoardSidebarProps) {
           <StickyNote className="w-6 h-6" />
           <span className="text-lg font-bold">Note Board</span>
         </div>
+        <div className="flex items-center justify-between gap-2 p-2">
+          <p className="text-xs text-muted-foreground">
+            Organize your thoughts
+          </p>
+          <ThemeToggle />
+        </div>
       </SidebarHeader>
 
       <SidebarContent className="overflow-x-hidden">
@@ -71,7 +78,7 @@ export function BoardSidebar({ user, folders, noteCount }: BoardSidebarProps) {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton className="w-full flex items-center justify-between cursor-pointer bg-blue-100/50">
+                <SidebarMenuButton className="w-full flex items-center justify-between cursor-pointer bg-blue-100/50 dark:bg-neutral-800">
                   <div className="flex items-center gap-2">
                     <Home className="w-5 h-5" />
                     <Link to="/board/all">
@@ -141,7 +148,7 @@ export function BoardSidebar({ user, folders, noteCount }: BoardSidebarProps) {
 
       <SidebarFooter>
         <div className="flex flex-col w-full px-2">
-          <div className="flex items-center gap-3 p-2 rounded-lg bg-blue-100/50 mb-2">
+          <div className="flex items-center gap-3 p-2 rounded-lg bg-blue-100/50 dark:bg-neutral-800 mb-2">
             <Avatar className="h-8 w-8">
               <AvatarFallback className="bg-blue-600 text-white text-xs font-medium">
                 {userInitials}
