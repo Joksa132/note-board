@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import type { Folder } from "@/lib/types";
 import { useDragContext } from "./providers/drag-context";
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 
 function FolderDropZone({
@@ -13,7 +13,6 @@ function FolderDropZone({
   onDrop: (noteId: string, folderId: string) => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [isOver, setIsOver] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
@@ -21,10 +20,7 @@ function FolderDropZone({
 
     const cleanup = dropTargetForElements({
       element: el,
-      onDragEnter: () => setIsOver(true),
-      onDragLeave: () => setIsOver(false),
       onDrop: ({ source }) => {
-        setIsOver(false);
         const noteId = source.data.noteId as string;
         if (noteId) {
           onDrop(noteId, folder.id);
