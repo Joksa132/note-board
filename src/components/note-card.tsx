@@ -46,7 +46,7 @@ export function NoteCard({
   const [isPreview, setIsPreview] = useState(true);
   const [content, setContent] = useState(note.content || "");
   const [color, setColor] = useState<[string, string]>(
-    note.color || ["yellow", "black"]
+    note.color || ["yellow", "black"],
   );
   const [width, setWidth] = useState(note.width);
   const [height, setHeight] = useState(note.height);
@@ -76,7 +76,7 @@ export function NoteCard({
         payload.width,
         payload.height,
         payload.pos_x,
-        payload.pos_y
+        payload.pos_y,
       ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notes", userId] });
@@ -179,7 +179,7 @@ export function NoteCard({
   return (
     <div
       ref={cardRef}
-      className="absolute rounded-xl border-2 shadow-lg"
+      className="absolute rounded-lg border-2 note-card-enter transition-shadow duration-200"
       onClick={() => setZIndex(999)}
       style={{
         left: `${pos.x}px`,
@@ -189,43 +189,78 @@ export function NoteCard({
         height: `${height}px`,
         backgroundColor: note.color[0],
         color: note.color[1],
+        boxShadow: isDragging
+          ? "0 25px 50px -12px var(--note-shadow), 0 0 0 1px rgba(0,0,0,0.05)"
+          : "0 10px 25px -5px var(--note-shadow), 0 0 0 1px rgba(0,0,0,0.03)",
+        transform: isDragging
+          ? "rotate(2deg) scale(1.02)"
+          : "rotate(0deg) scale(1)",
+        transition: isDragging ? "none" : "box-shadow 0.2s, transform 0.2s",
       }}
     >
       <div
         ref={dragHandleRef}
-        className="absolute top-2 left-2 p-1 hover:bg-black/5 cursor-grab active:cursor-grabbing"
+        className="absolute top-3 left-3 p-1.5 rounded-md hover:bg-black/8 dark:hover:bg-white/10 cursor-grab active:cursor-grabbing transition-all group"
         title="Drag to move"
       >
-        <GripVertical className="w-5 h-5" />
+        <GripVertical
+          className="w-4 h-4 opacity-40 group-hover:opacity-70 transition-opacity"
+          strokeWidth={2.5}
+        />
       </div>
 
-      <div className="p-4 h-full flex flex-col">
-        <div className="flex items-start justify-between mb-3">
-          <div className="w-full flex items-center justify-end gap-1">
+      <div className="p-5 pt-14 h-full flex flex-col">
+        <div className="absolute top-3 right-3 flex items-center gap-1">
+          <Button
+            onClick={() => setIsPreview(!isPreview)}
+            size="sm"
+            variant="ghost"
+            className="h-7 w-7 p-0 rounded-md hover:bg-black/8 dark:hover:bg-white/10 transition-all"
+            title={isPreview ? "Edit" : "Preview"}
+          >
+            {isPreview ? (
+              <Type className="w-3.5 h-3.5" strokeWidth={2.5} />
+            ) : (
+              <Eye className="w-3.5 h-3.5" strokeWidth={2.5} />
+            )}
+          </Button>
+
+          <AiActionsPopover
+            note={note}
+            userId={userId}
+            setIsPreview={setIsPreview}
+          />
+
+          <ColorPopover
+            color={color}
+            setColor={setColor}
+            onSave={() => {
+              updateNoteMutation.mutate({
+                id: note.id,
+                pos_x: Math.round(pos.x),
+                pos_y: Math.round(pos.y),
+                width: Math.round(width),
+                height: Math.round(height),
+                content,
+                color,
+              });
+            }}
+            initialColor={note.color || ["yellow", "black"]}
+          />
+
+          <Button
+            onClick={() => deleteNoteMutation.mutate()}
+            size="sm"
+            variant="ghost"
+            className="h-7 w-7 p-0 rounded-md hover:bg-destructive/15 hover:text-destructive transition-all"
+            title="Delete note"
+          >
+            <Trash2 className="w-3.5 h-3.5" strokeWidth={2.5} />
+          </Button>
+
+          {!isPreview && (
             <Button
-              onClick={() => setIsPreview(!isPreview)}
-              size="sm"
-              variant="ghost"
-              className="h-8 w-8 p-0 hover:bg-black/5"
-              title={isPreview ? "Edit" : "Preview"}
-            >
-              {isPreview ? (
-                <Type className="w-4 h-4" />
-              ) : (
-                <Eye className="w-4 h-4" />
-              )}
-            </Button>
-
-            <AiActionsPopover
-              note={note}
-              userId={userId}
-              setIsPreview={setIsPreview}
-            />
-
-            <ColorPopover
-              color={color}
-              setColor={setColor}
-              onSave={() => {
+              onClick={() =>
                 updateNoteMutation.mutate({
                   id: note.id,
                   pos_x: Math.round(pos.x),
@@ -234,47 +269,27 @@ export function NoteCard({
                   height: Math.round(height),
                   content,
                   color,
-                });
-              }}
-              initialColor={note.color || ["yellow", "black"]}
-            />
-
-            <Button
-              onClick={() => deleteNoteMutation.mutate()}
+                })
+              }
               size="sm"
               variant="ghost"
-              className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
-              title="Delete note"
+              className="h-7 w-7 p-0 rounded-md hover:bg-black/8 dark:hover:bg-white/10 transition-all"
+              title="Save changes"
             >
-              <Trash2 className="w-4 h-4" />
+              <Save className="w-3.5 h-3.5" strokeWidth={2.5} />
             </Button>
-            {!isPreview && (
-              <Button
-                onClick={() =>
-                  updateNoteMutation.mutate({
-                    id: note.id,
-                    pos_x: Math.round(pos.x),
-                    pos_y: Math.round(pos.y),
-                    width: Math.round(width),
-                    height: Math.round(height),
-                    content,
-                    color,
-                  })
-                }
-                size="sm"
-                variant="ghost"
-                className="h-8 w-8 p-0 hover:bg-black/5"
-              >
-                <Save className="w-4 h-4" />
-              </Button>
-            )}
-          </div>
+          )}
         </div>
-        <div className="flex-1 overflow-auto">
+
+        <div className="flex-1 overflow-auto scrollbar-thin">
           {isPreview ? (
-            <div className="prose prose-sm max-w-none prose-headings:font-bold prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-ul:list-disc prose-ol:list-decimal prose-li:ml-4">
+            <div
+              className="prose prose-sm max-w-none prose-headings:font-bold prose-h1:text-xl prose-h2:text-lg prose-h3:text-base prose-ul:list-disc prose-ol:list-decimal prose-li:ml-4 prose-p:leading-relaxed"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {note.content || "*No content*"}
+                {note.content ||
+                  "*No content yet. Click edit to start writing.*"}
               </ReactMarkdown>
             </div>
           ) : (
@@ -282,19 +297,31 @@ export function NoteCard({
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Write your note in markdown..."
-              className="h-full resize-none bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-muted-foreground/60 p-0"
+              className="h-full resize-none bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:opacity-40 p-0 leading-relaxed"
+              style={{ fontFamily: "var(--font-body)" }}
             />
           )}
         </div>
 
         <div
           onPointerDown={handleResize}
-          className="absolute bottom-1 right-1 cursor-se-resize"
+          className="absolute bottom-2 right-2 p-1 cursor-se-resize rounded-md hover:bg-black/8 dark:hover:bg-white/10 transition-all group"
           title="Drag to resize"
         >
-          <MoveDiagonal2 className="w-4 h-4 text-black/50 hover:text-black" />
+          <MoveDiagonal2
+            className="w-3.5 h-3.5 opacity-30 group-hover:opacity-60 transition-opacity"
+            strokeWidth={2.5}
+          />
         </div>
       </div>
+
+      <div
+        className="absolute inset-0 rounded-lg pointer-events-none"
+        style={{
+          background:
+            "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%)",
+        }}
+      ></div>
     </div>
   );
 }

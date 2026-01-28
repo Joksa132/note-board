@@ -50,7 +50,7 @@ function BoardLayout() {
     <ThemeProvider>
       <SidebarProvider>
         <DragProvider>
-          <div className="min-h-screen w-full flex flex-col overflow-hidden">
+          <div className="min-h-screen w-full flex flex-col overflow-hidden bg-background">
             <div className="flex flex-1 overflow-hidden">
               {user && (
                 <BoardSidebar
@@ -61,11 +61,22 @@ function BoardLayout() {
               )}
 
               <SidebarInset className="flex flex-col flex-1 overflow-hidden">
-                <div className="flex h-12 items-center px-4 border-b shrink-0">
-                  <SidebarTrigger />
+                <div className="relative flex h-14 items-center px-6 border-b shrink-0 bg-card/50 backdrop-blur-sm z-10">
+                  <div className="flex items-center gap-3">
+                    <SidebarTrigger className="hover:bg-accent/50 transition-colors" />
+                    <div className="h-5 w-px bg-border"></div>
+                    <h1
+                      className="text-lg font-semibold tracking-tight"
+                      style={{ fontFamily: "var(--font-heading)" }}
+                    >
+                      Note Board
+                    </h1>
+                  </div>
+
+                  <div className="absolute bottom-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-primary/30 to-transparent"></div>
                 </div>
 
-                <main className="flex-1 p-4 pt-4 overflow-auto">
+                <main className="flex-1 overflow-auto board-canvas">
                   <Outlet />
                 </main>
               </SidebarInset>

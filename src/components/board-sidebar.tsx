@@ -59,33 +59,47 @@ export function BoardSidebar({ user, folders, noteCount }: BoardSidebarProps) {
   const notes = queryClient.getQueryData<Note[]>(["notes", user?.id]) ?? [];
 
   return (
-    <Sidebar>
-      <SidebarHeader>
-        <div className="flex items-center gap-2 p-2">
-          <StickyNote className="w-6 h-6" />
-          <span className="text-lg font-bold">Note Board</span>
+    <Sidebar className="sidebar-fade-in border-r border-sidebar-border">
+      <SidebarHeader className="p-5 pb-4">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="p-2 rounded-lg bg-primary/10">
+            <StickyNote className="w-5 h-5 text-primary" strokeWidth={2.5} />
+          </div>
+          <span
+            className="text-xl font-bold tracking-tight"
+            style={{ fontFamily: "var(--font-heading)" }}
+          >
+            Note Board
+          </span>
         </div>
-        <div className="flex items-center justify-between gap-2 p-2">
-          <p className="text-xs text-muted-foreground">
-            Organize your thoughts
+        <div className="flex items-center justify-between gap-2 px-1">
+          <p
+            className="text-xs text-muted-foreground italic"
+            style={{ fontFamily: "var(--font-heading)" }}
+          >
+            Organize your creative thoughts
           </p>
           <ThemeToggle />
         </div>
+        <div className="mt-4 h-px bg-linear-to-r from-transparent via-border to-transparent"></div>
       </SidebarHeader>
 
-      <SidebarContent className="overflow-x-hidden">
+      <SidebarContent className="overflow-x-hidden px-3">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton className="w-full flex items-center justify-between cursor-pointer bg-blue-100/50 dark:bg-neutral-800">
-                  <div className="flex items-center gap-2">
-                    <Home className="w-5 h-5" />
+                <SidebarMenuButton className="w-full flex items-center justify-between cursor-pointer bg-accent/40 hover:bg-accent/60 transition-all duration-200 rounded-lg px-3 py-2.5 group">
+                  <div className="flex items-center gap-3">
+                    <Home
+                      className="w-4 h-4 text-primary group-hover:scale-110 transition-transform"
+                      strokeWidth={2.5}
+                    />
                     <Link to="/board/all">
-                      <span className="font-medium">All Notes</span>
+                      <span className="font-semibold text-sm">All Notes</span>
                     </Link>
                   </div>
-                  <span className="text-xs font-medium opacity-75">
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-primary/15 text-primary min-w-6 text-center">
                     {noteCount}
                   </span>
                 </SidebarMenuButton>
@@ -94,41 +108,56 @@ export function BoardSidebar({ user, folders, noteCount }: BoardSidebarProps) {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarSeparator />
+        <SidebarSeparator className="my-4 bg-border" />
 
         <SidebarGroup>
-          <SidebarGroupLabel className="flex items-center justify-between">
-            <span>Folders</span>
+          <SidebarGroupLabel className="flex items-center justify-between px-2 mb-3">
+            <span
+              className="text-xs font-bold uppercase tracking-wider text-muted-foreground"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              Folders
+            </span>
             <Button
               onClick={() => addFolderMutation.mutate()}
               size="sm"
               variant="ghost"
-              className="h-6 w-6 p-0"
+              className="h-7 w-7 p-0 rounded-md hover:bg-accent/60 transition-colors"
+              title="Add new folder"
             >
-              <Plus className="w-3 h-3" />
+              <Plus className="w-3.5 h-3.5" strokeWidth={2.5} />
             </Button>
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {folders.map((folder) => {
+            <SidebarMenu className="space-y-1">
+              {folders.map((folder, index) => {
                 const folderNoteCount = folder.id
                   ? notes.filter((note) => note.folder_id === folder.id).length
                   : 0;
 
                 return (
-                  <SidebarMenuItem key={folder.id}>
+                  <SidebarMenuItem
+                    key={folder.id}
+                    style={{ animationDelay: `${index * 50}ms` }}
+                    className="animate-in-up"
+                  >
                     <div className="flex items-center gap-2 group">
-                      <SidebarMenuButton className="flex-1 cursor-pointer flex items-center gap-2">
-                        <FolderIcon className="w-4 h-4 text-muted-foreground" />
+                      <SidebarMenuButton className="flex-1 cursor-pointer flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-accent/40 transition-all">
+                        <FolderIcon
+                          className="w-4 h-4 text-accent-foreground/60 group-hover:text-primary transition-colors"
+                          strokeWidth={2}
+                        />
                         <Link
                           to="/board/$folder"
                           params={{ folder: folder.id }}
                         >
-                          <span className="flex-1 truncate">{folder.name}</span>
+                          <span className="flex-1 truncate text-sm font-medium">
+                            {folder.name}
+                          </span>
                         </Link>
                       </SidebarMenuButton>
 
-                      <span className="text-xs opacity-75">
+                      <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded bg-muted text-muted-foreground min-w-5 text-center">
                         {folderNoteCount}
                       </span>
 
@@ -146,20 +175,26 @@ export function BoardSidebar({ user, folders, noteCount }: BoardSidebarProps) {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter>
-        <div className="flex flex-col w-full px-2">
-          <div className="flex items-center gap-3 p-2 rounded-lg bg-blue-100/50 dark:bg-neutral-800 mb-2">
-            <Avatar className="h-8 w-8">
-              <AvatarFallback className="bg-blue-600 text-white text-xs font-medium">
+      <SidebarFooter className="p-3 border-t border-sidebar-border">
+        <div className="flex flex-col w-full gap-2.5">
+          <div className="relative flex items-center gap-3 p-3 rounded-xl bg-accent/30 border border-border/50 backdrop-blur-sm transition-all duration-200 hover:border-primary/30 group">
+            <Avatar className="h-9 w-9 ring-2 ring-background">
+              <AvatarFallback
+                className="bg-linear-to-br from-primary to-accent text-primary-foreground text-xs font-bold"
+                style={{ fontFamily: "var(--font-heading)" }}
+              >
                 {userInitials}
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col flex-1 min-w-0">
-              <span className="text-sm font-medium truncate" title={user.name}>
+              <span
+                className="text-sm font-semibold truncate leading-tight"
+                title={user.name}
+              >
                 {user.name}
               </span>
               <span
-                className="text-xs text-muted-foreground truncate"
+                className="text-[11px] text-muted-foreground truncate leading-tight mt-0.5"
                 title={user.email}
               >
                 {user.email}
@@ -168,13 +203,14 @@ export function BoardSidebar({ user, folders, noteCount }: BoardSidebarProps) {
             <Button
               size="sm"
               variant="ghost"
-              className="h-8 w-8"
+              className="h-8 w-8 p-0 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-all"
               title="Logout"
               onClick={handleLogout}
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-4 h-4" strokeWidth={2} />
             </Button>
           </div>
+
           <NewNoteDialog
             queryClient={queryClient}
             userId={user.id}

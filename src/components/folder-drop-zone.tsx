@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import type { Folder } from "@/lib/types";
 import { useDragContext } from "./providers/drag-context";
-import { useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 
 function FolderDropZone({
@@ -13,7 +13,7 @@ function FolderDropZone({
   onDrop: (noteId: string, folderId: string) => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  //const [isOver, setIsOver] = useState(false);
+  const [isOver, setIsOver] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
@@ -21,10 +21,10 @@ function FolderDropZone({
 
     const cleanup = dropTargetForElements({
       element: el,
-      //onDragEnter: () => setIsOver(true),
-      //onDragLeave: () => setIsOver(false),
+      onDragEnter: () => setIsOver(true),
+      onDragLeave: () => setIsOver(false),
       onDrop: ({ source }) => {
-        //setIsOver(false);
+        setIsOver(false);
         const noteId = source.data.noteId as string;
         if (noteId) {
           onDrop(noteId, folder.id);
@@ -38,11 +38,13 @@ function FolderDropZone({
   return (
     <div
       ref={ref}
-      className={
-        "border border-dashed rounded-lg bg-background/70 backdrop-blur-md px-8 py-4 cursor-pointer text-lg font-medium"
-      }
+      className="border-2 border-dashed border-primary/60 rounded-xl bg-accent/80 backdrop-blur-md px-6 py-3 cursor-pointer text-base font-semibold transition-all hover:bg-accent hover:border-primary shadow-lg"
+      style={{ fontFamily: "var(--font-body)" }}
     >
-      {folder.name}
+      <div className="flex items-center gap-2">
+        <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+        {folder.name}
+      </div>
     </div>
   );
 }
@@ -84,8 +86,14 @@ export function FolderDropBar({
   if (!isDragging) return null;
 
   return (
-    <div className="absolute top-2 left-0 right-0 z-1000 flex justify-center gap-4 pointer-events-none">
-      <div className="flex gap-4 pointer-events-auto">
+    <div className="absolute top-8 left-0 right-0 z-1000 flex justify-center gap-3 pointer-events-none animate-in-up">
+      <div className="flex gap-3 pointer-events-auto p-3 rounded-2xl bg-card/95 backdrop-blur-lg border border-border shadow-2xl">
+        <div
+          className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-2 py-2 flex items-center"
+          style={{ fontFamily: "var(--font-body)" }}
+        >
+          Drop to move:
+        </div>
         {folders.map((folder) => (
           <FolderDropZone key={folder.id} folder={folder} onDrop={handleDrop} />
         ))}
